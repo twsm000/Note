@@ -142,8 +142,10 @@
         <DCCReference Include="src\Views\Note.View.Forms.pas"/>
         <DCCReference Include="src\Views\Note.View.Utils.pas"/>
         <DCCReference Include="src\Views\Note.View.StringResources.pas"/>
-        <DCCReference Include="src\Controllers\Note.Controller.Utils.pas"/>
+        <DCCReference Include="src\Controllers\Note.Controller.Exceptions.pas"/>
         <DCCReference Include="src\Controllers\Note.Controller.FilePath.pas"/>
+        <DCCReference Include="src\Controllers\Note.Controller.Interfaces.pas"/>
+        <DCCReference Include="src\Controllers\Note.Controller.Utils.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
