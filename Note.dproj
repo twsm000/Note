@@ -140,6 +140,8 @@
             <Form>MainView</Form>
         </DCCReference>
         <DCCReference Include="src\Views\Note.View.Forms.pas"/>
+        <DCCReference Include="src\Views\Note.View.Utils.pas"/>
+        <DCCReference Include="src\Views\Note.View.StringResources.pas"/>
         <DCCReference Include="src\Controllers\Note.Controller.Utils.pas"/>
         <DCCReference Include="src\Controllers\Note.Controller.FilePath.pas"/>
         <BuildConfiguration Include="Release">
