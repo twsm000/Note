@@ -1,14 +1,17 @@
-﻿unit Note.View.Forms;
+﻿unit Note.View.Controls;
 
 interface
 
 uses
   Vcl.Forms,
   Vcl.Controls,
+  Vcl.ComCtrls,
+  Vcl.StdCtrls,
   System.Classes,
   System.Generics.Collections,
   System.SysUtils,
-  Winapi.Windows;
+  Winapi.Windows,
+  Note.Controller.Interfaces;
 
 type
   TForm = class(Vcl.Forms.TForm)
@@ -19,6 +22,12 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure AddOnKeyDownEvent(const Key: Word; Event: TKeyEvent);
+  end;
+
+  TMemo = class(Vcl.StdCtrls.TMemo, IEditor<TStrings>)
+  public
+    function Content: TStrings;
+    procedure SetOnChangeConsumer(Event: TNotifyEvent);
   end;
 
 implementation
@@ -54,6 +63,18 @@ end;
 procedure TForm.AddOnKeyDownEvent(const Key: Word; Event: TKeyEvent);
 begin
   FOnKeyDownMap.AddOrSetValue(Key, Event);
+end;
+
+{ TMemo }
+
+function TMemo.Content: TStrings;
+begin
+  Result := Self.Lines;
+end;
+
+procedure TMemo.SetOnChangeConsumer(Event: TNotifyEvent);
+begin
+  Self.OnChange := Event;
 end;
 
 end.

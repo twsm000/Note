@@ -6,50 +6,8 @@ interface
 
 
 uses
-  Windows;
-
-type
-  TFilePathType = (ftUnknow, ftFileLocated, ftFileUnlocated, ftFolder);
-  TExtension = string;
-
-  IFileExtension = interface
-    ['{EC211CFE-3125-4D64-A3B5-98E4A577A295}']
-    function Initials: TExtension;
-    function Name: string;
-    function Filter: string;
-    function IsEquals(Initials: TExtension): Boolean;
-  end;
-
-  IGenericFile = interface
-    ['{79D8DE20-6C3B-40B4-8D6A-58274B60CA49}']
-    function AsObject: TObject;
-    function CopyTo(const Destionation: string; Overwrite: Boolean = False): Boolean;
-    function Delete: Boolean;
-    function Exists: Boolean;
-    function Path: string;
-    function Name: string;
-    procedure Open(Handle: THandle);
-  end;
-
-  IDirectory = interface(IGenericFile)
-    ['{D87023E5-B23C-43D5-8D84-F4BCE53F1954}']
-    function CreateDirs: Boolean;
-  end;
-
-  IFile = interface(IGenericFile)
-    ['{2E171990-FDC8-46E4-BB64-7A3BCE96514C}']
-    function Date: TDateTime;
-    function Directory: IDirectory;
-    function Extension: IFileExtension;
-    function FullName: string;
-    function Size: Int64;
-    function SizeDetailed(ShowBytes: Boolean = True): string;
-    function TypeDef: TFilePathType;
-    function IsFile: Boolean;
-    function IsDirectory: Boolean;
-    function SetAttrReadOnlyParaArchive: Boolean;
-    procedure WaitOutput(SleepCheck: Integer = 500);
-  end;
+  Windows,
+  Note.Controller.Interfaces;
 
 function NewFileExtension(Initials: TExtension; const ExtensionName: string;
   AcceptEmptyExtension: Boolean = False): IFileExtension;

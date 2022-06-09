@@ -27,10 +27,14 @@ type
     class procedure MessageDebug(AMessage: string);
   end;
 
+  TFileInfo = record
+    FilePath: string;
+    Encoding: string;
+  end;
   TDialogHelper = class
   public
-    class function OpenTextFile(const InitialDir: string): string;
-    class function SaveTextFile(const InitialDir, FileName: string): string;
+    class function OpenTextFile(const InitialDir: string): TFileInfo;
+    class function SaveTextFile(const InitialDir, FileName, Encoding: string): TFileInfo;
   end;
 
 implementation
@@ -104,12 +108,21 @@ end;
 
 { TOpenDialogHelper }
 
-class function TDialogHelper.OpenTextFile(const InitialDir: string): string;
+class function TDialogHelper.OpenTextFile(const InitialDir: string): TFileInfo;
 var
   FileDialog: TOpenTextFileDialog;
+  EncodingIndex: Integer;
 begin
   FileDialog := TOpenTextFileDialog.Create(Application);
   try
+    EncodingIndex := FileDialog.Encodings.IndexOf(TStringResources.DefaultEncoding);
+    if EncodingIndex < 0 then
+    begin
+      FileDialog.Encodings.Insert(0, TStringResources.DefaultEncoding);
+      EncodingIndex := 0;
+    end;
+    FileDialog.EncodingIndex := EncodingIndex;
+
     FileDialog.Title := TStringResources.OpenFileTitle;
     FileDialog.Filter := 'Text file | *.txt';
     FileDialog.InitialDir := InitialDir;
@@ -118,18 +131,29 @@ begin
 
     if not FileDialog.Execute then
       Abort;
-    Result := FileDialog.FileName;
+
+    Result.FilePath := FileDialog.FileName;
+    Result.Encoding := FileDialog.Encodings[FileDialog.EncodingIndex];
   finally
     FileDialog.Free;
   end;
 end;
 
-class function TDialogHelper.SaveTextFile(const InitialDir, FileName: string): string;
+class function TDialogHelper.SaveTextFile(const InitialDir, FileName, Encoding: string): TFileInfo;
 var
   FileDialog: TSaveTextFileDialog;
+  EncodingIndex: Integer;
 begin
   FileDialog := TSaveTextFileDialog.Create(Application);
   try
+    EncodingIndex := FileDialog.Encodings.IndexOf(Encoding);
+    if EncodingIndex < 0 then
+    begin
+      FileDialog.Encodings.Insert(0, Encoding);
+      EncodingIndex := 0;
+    end;
+    FileDialog.EncodingIndex := EncodingIndex;
+
     FileDialog.Title := TStringResources.SaveFileAsTitle;
     FileDialog.Filter := 'Text file | *.txt';
     FileDialog.InitialDir := InitialDir;
@@ -138,7 +162,11 @@ begin
 
     if not FileDialog.Execute then
       Abort;
-    Result := FileDialog.FileName;
+
+    Result.FilePath := FileDialog.FileName;
+    if not Result.FilePath.EndsWith('.txt', True) then
+      Result.FilePath := Result.FilePath + '.txt';
+    Result.Encoding := FileDialog.Encodings[FileDialog.EncodingIndex];
   finally
     FileDialog.Free;
   end;

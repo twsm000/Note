@@ -6,7 +6,8 @@ uses
   System.SysUtils;
 
 type
-  EFileNotExists = class(Exception);
+  EForceTermination = class(Exception);
+  EUnsuportedFile = class(Exception);
   EUnwrittenContent = class(Exception);
 
 implementation

@@ -9,6 +9,7 @@ type
     class function SaveFileMessage(const FileName: string): string;
     class function OpenFileTitle: string;
     class function SaveFileAsTitle: string;
+    class function DefaultEncoding: string;
   end;
 
 implementation
@@ -21,6 +22,7 @@ resourcestring
   SAVE_FILE_MSG = 'Deseja salvar as alterações em %s?';
   OPEN_FILE_TITLE = 'Abrir';
   SAVE_FILE_TITLE = 'Salvar como';
+  DEFAULT_ENCODING = 'UTF-8';
 
   { TStringResources }
 
@@ -42,6 +44,11 @@ end;
 class function TStringResources.SaveFileAsTitle: string;
 begin
   Result := SAVE_FILE_TITLE;
+end;
+
+class function TStringResources.DefaultEncoding: string;
+begin
+  Result := DEFAULT_ENCODING;
 end;
 
 end.
