@@ -50,7 +50,7 @@ type
     PopUpSair: TMenuItem;
     SpeedButtonEditMenu: TSpeedButton;
     SpeedButtonDisplayMenu: TSpeedButton;
-    StatusBar1: TStatusBar;
+    StatusBarMain: TStatusBar;
     ActionUndo: TAction;
     ActionCut: TAction;
     ActionCopy: TAction;
@@ -74,6 +74,13 @@ type
     SpeedButtonSettings: TSpeedButton;
     VirtualImageList1: TVirtualImageList;
     ImageCollection1: TImageCollection;
+    PopUpDisplayMenu: TPopupMenu;
+    PopUpIncreaseZoom: TMenuItem;
+    MenuItem6: TMenuItem;
+    PopUpDecreaseZoom: TMenuItem;
+    PopUpDefaultZoom: TMenuItem;
+    PopUpStatusBar: TMenuItem;
+    PopUpWordWrap: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ActionNewFileExecute(Sender: TObject);
@@ -85,6 +92,13 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormShow(Sender: TObject);
     procedure ActionSettingsExecute(Sender: TObject);
+    procedure ActionIncreaseZoomExecute(Sender: TObject);
+    procedure ActionDecreaseZoomExecute(Sender: TObject);
+    procedure ActionDefaultZoomExecute(Sender: TObject);
+    procedure ActionStatusBarExecute(Sender: TObject);
+    procedure ActionWordWrapExecute(Sender: TObject);
+    procedure FormMouseWheelUp(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
+    procedure FormMouseWheelDown(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
   private
     FPopMenuMap: TDictionary<TObject, TPopupMenu>;
     FFileController: IFileController<TStrings>;
@@ -105,6 +119,7 @@ var
 implementation
 
 uses
+  System.UITypes,
   Note.View.StringResources,
   Note.Controller.Exceptions,
   Note.Controller.Utils;
@@ -116,10 +131,16 @@ procedure TMainView.FormCreate(Sender: TObject);
 begin
   FPopMenuMap := TDictionary<TObject, TPopupMenu>.Create;
   FPopMenuMap.AddOrSetValue(SpeedButtonFileMenu, PopUpFileMenu);
+  FPopMenuMap.AddOrSetValue(SpeedButtonDisplayMenu, PopUpDisplayMenu);
 
   SpeedButtonFileMenu.OnClick := Self.OnPopUpMenuClick;
   SpeedButtonEditMenu.OnClick := Self.OnPopUpMenuClick;
   SpeedButtonDisplayMenu.OnClick := Self.OnPopUpMenuClick;
+
+  ActionIncreaseZoom.ShortCut := scCtrl or vkEqual;
+  ActionIncreaseZoom.SecondaryShortCuts.Add('Ctrl++');
+  ActionDecreaseZoom.ShortCut := scCtrl or vkMinus;
+  ActionDecreaseZoom.SecondaryShortCuts.Add('Ctrl+-');
 end;
 
 procedure TMainView.FormDestroy(Sender: TObject);
@@ -239,6 +260,45 @@ end;
 procedure TMainView.ActionSettingsExecute(Sender: TObject);
 begin
   // TODO: ...
+end;
+
+procedure TMainView.ActionIncreaseZoomExecute(Sender: TObject);
+begin
+  Editor.Font.Size := Editor.Font.Size + 1;
+end;
+
+procedure TMainView.ActionDecreaseZoomExecute(Sender: TObject);
+begin
+  Editor.Font.Size := Editor.Font.Size - 1;
+end;
+
+procedure TMainView.ActionDefaultZoomExecute(Sender: TObject);
+begin
+  Editor.Font.Size := Self.Font.Size;
+end;
+
+procedure TMainView.ActionStatusBarExecute(Sender: TObject);
+begin
+  ActionStatusBar.Checked := not ActionStatusBar.Checked;
+  StatusBarMain.Visible := ActionStatusBar.Checked;
+end;
+
+procedure TMainView.ActionWordWrapExecute(Sender: TObject);
+begin
+  ActionWordWrap.Checked := not ActionWordWrap.Checked;
+  Editor.WordWrap := ActionWordWrap.Checked;
+end;
+
+procedure TMainView.FormMouseWheelUp(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
+begin
+  if Shift = [ssCtrl] then
+    ActionIncreaseZoom.Execute;
+end;
+
+procedure TMainView.FormMouseWheelDown(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
+begin
+  if Shift = [ssCtrl] then
+    ActionDecreaseZoom.Execute;
 end;
 
 end.

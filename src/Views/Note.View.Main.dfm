@@ -14,6 +14,8 @@ object MainView: TMainView
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnMouseWheelDown = FormMouseWheelDown
+  OnMouseWheelUp = FormMouseWheelUp
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -60,7 +62,6 @@ object MainView: TMainView
       Align = alLeft
       Caption = 'Exibir'
       Flat = True
-      Visible = False
       ExplicitLeft = 246
       ExplicitTop = 6
     end
@@ -78,7 +79,7 @@ object MainView: TMainView
       ExplicitLeft = 752
     end
   end
-  object StatusBar1: TStatusBar
+  object StatusBarMain: TStatusBar
     Left = 0
     Top = 699
     Width = 830
@@ -93,6 +94,7 @@ object MainView: TMainView
     Align = alClient
     ScrollBars = ssVertical
     TabOrder = 2
+    ExplicitTop = 44
   end
   object ActionListMain: TActionList
     Images = VirtualImageList1
@@ -200,23 +202,30 @@ object MainView: TMainView
     object ActionIncreaseZoom: TAction
       Category = 'Display'
       Caption = 'Aplicar zoom'
+      OnExecute = ActionIncreaseZoomExecute
     end
     object ActionDecreaseZoom: TAction
       Category = 'Display'
       Caption = 'Reduzir zoom'
+      OnExecute = ActionDecreaseZoomExecute
     end
     object ActionDefaultZoom: TAction
       Category = 'Display'
       Caption = 'Restaurar zoom padr'#227'o'
       ShortCut = 16432
+      OnExecute = ActionDefaultZoomExecute
     end
     object ActionStatusBar: TAction
       Category = 'Display'
       Caption = 'Barra de status'
+      Checked = True
+      OnExecute = ActionStatusBarExecute
     end
     object ActionWordWrap: TAction
       Category = 'Display'
       Caption = 'Quebra de linha automatica'
+      Checked = True
+      OnExecute = ActionWordWrapExecute
     end
     object ActionSettings: TAction
       Category = 'Menu'
@@ -263,8 +272,8 @@ object MainView: TMainView
         Name = 'settings'
       end>
     ImageCollection = ImageCollection1
-    Left = 744
-    Top = 232
+    Left = 736
+    Top = 360
   end
   object ImageCollection1: TImageCollection
     Images = <
@@ -298,7 +307,31 @@ object MainView: TMainView
               F1EB4FCE0000000049454E44AE426082}
           end>
       end>
+    Left = 736
+    Top = 296
+  end
+  object PopUpDisplayMenu: TPopupMenu
+    MenuAnimation = [maTopToBottom]
+    OwnerDraw = True
     Left = 744
-    Top = 168
+    Top = 166
+    object PopUpIncreaseZoom: TMenuItem
+      Action = ActionIncreaseZoom
+    end
+    object PopUpDecreaseZoom: TMenuItem
+      Action = ActionDecreaseZoom
+    end
+    object PopUpDefaultZoom: TMenuItem
+      Action = ActionDefaultZoom
+    end
+    object MenuItem6: TMenuItem
+      Caption = '-'
+    end
+    object PopUpStatusBar: TMenuItem
+      Action = ActionStatusBar
+    end
+    object PopUpWordWrap: TMenuItem
+      Action = ActionWordWrap
+    end
   end
 end
