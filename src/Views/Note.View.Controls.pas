@@ -11,7 +11,9 @@ uses
   System.Generics.Collections,
   System.SysUtils,
   Winapi.Windows,
-  Note.Controller.Interfaces;
+  Note.Controller.Interfaces,
+  Winapi.Messages,
+  Winapi.CommCtrl;
 
 type
   TForm = class(Vcl.Forms.TForm)

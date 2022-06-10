@@ -25,6 +25,7 @@ uses
   System.ImageList,
   Vcl.ImgList,
   Vcl.VirtualImageList,
+  Vcl.Samples.Spin,
   Note.Controller.Interfaces,
   Note.View.Utils,
   Note.View.Controls;
@@ -37,8 +38,6 @@ type
     ActionOpenFile: TAction;
     ActionSaveFile: TAction;
     ActionSaveFileAs: TAction;
-    PanelMenu: TPanel;
-    SpeedButtonFileMenu: TSpeedButton;
     PopUpFileMenu: TPopupMenu;
     PopUpNewFile: TMenuItem;
     PopUpNewWindow: TMenuItem;
@@ -48,8 +47,6 @@ type
     ActionExit: TAction;
     N1: TMenuItem;
     PopUpSair: TMenuItem;
-    SpeedButtonEditMenu: TSpeedButton;
-    SpeedButtonDisplayMenu: TSpeedButton;
     StatusBarMain: TStatusBar;
     ActionUndo: TAction;
     ActionCut: TAction;
@@ -69,9 +66,7 @@ type
     ActionDefaultZoom: TAction;
     ActionStatusBar: TAction;
     ActionWordWrap: TAction;
-    Editor: TMemo;
     ActionSettings: TAction;
-    SpeedButtonSettings: TSpeedButton;
     VirtualImageList1: TVirtualImageList;
     ImageCollection1: TImageCollection;
     PopUpDisplayMenu: TPopupMenu;
@@ -81,6 +76,27 @@ type
     PopUpDefaultZoom: TMenuItem;
     PopUpStatusBar: TMenuItem;
     PopUpWordWrap: TMenuItem;
+    PageControlMain: TPageControl;
+    TabSheetEditor: TTabSheet;
+    TabSheetSettings: TTabSheet;
+    Editor: TMemo;
+    PanelMenu: TPanel;
+    SpeedButtonFileMenu: TSpeedButton;
+    SpeedButtonEditMenu: TSpeedButton;
+    SpeedButtonDisplayMenu: TSpeedButton;
+    SpeedButtonSettings: TSpeedButton;
+    ActionBackToEditor: TAction;
+    PanelLoremIpsum: TPanel;
+    LabelExample: TLabel;
+    PanelSettings: TPanel;
+    Label1: TLabel;
+    SpeedButtonBackToEditor: TSpeedButton;
+    Label2: TLabel;
+    ComboBoxFontNames: TComboBox;
+    Label4: TLabel;
+    SpinEditFontSize: TSpinEdit;
+    ActionRestoreFontSettings: TAction;
+    SpeedButtonRestoreDefaultSettings: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ActionNewFileExecute(Sender: TObject);
@@ -100,6 +116,9 @@ type
     procedure FormMouseWheelUp(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
     procedure FormMouseWheelDown(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure ActionBackToEditorExecute(Sender: TObject);
+    procedure OnChangeFontSettings(Sender: TObject);
+    procedure ActionRestoreFontSettingsExecute(Sender: TObject);
   private
     FPopMenuMap: TDictionary<TObject, TPopupMenu>;
     FFileController: IFileController<TStrings>;
@@ -111,6 +130,8 @@ type
     procedure SetStatusBarVisible(Value: Boolean);
     procedure SetEditorFontSize(const Value: Integer);
     procedure SetEditorFontName(const Value: string);
+    procedure SetDisplayTabSheet(TabSheet: TTabSheet);
+    procedure SetFontSettings(const FontName: string; const Size: Integer);
     { Private declarations }
   public
     property FileController: IFileController<TStrings> read FFileController write SetFileController;
@@ -167,6 +188,9 @@ end;
 
 procedure TMainView.FormCreate(Sender: TObject);
 begin
+  Self.SetDisplayTabSheet(TabSheetEditor);
+  ComboBoxFontNames.Items.AddStrings(Screen.FONTS);
+
   FPopMenuMap := TDictionary<TObject, TPopupMenu>.Create;
   FPopMenuMap.AddOrSetValue(SpeedButtonFileMenu, PopUpFileMenu);
   FPopMenuMap.AddOrSetValue(SpeedButtonDisplayMenu, PopUpDisplayMenu);
@@ -195,6 +219,17 @@ begin
     .Read;
 end;
 
+procedure TMainView.SetDisplayTabSheet(TabSheet: TTabSheet);
+var
+  I: Integer;
+begin
+  for I := 0 to PageControlMain.PageCount - 1 do
+    PageControlMain.Pages[I].TabVisible := False;
+
+  PageControlMain.ActivePage := TabSheet;
+  PageControlMain.Canvas.Brush.Color := clWhite;
+end;
+
 procedure TMainView.FormDestroy(Sender: TObject);
 begin
   FPopMenuMap.Free;
@@ -204,6 +239,7 @@ procedure TMainView.FormShow(Sender: TObject);
 begin
   if not Assigned(FFileController) then
     raise EForceTermination.Create('TextFileController unassinged');
+  Editor.SetFocus;
 end;
 
 procedure TMainView.ExceptionHandler(Sender: TObject; E: Exception);
@@ -323,11 +359,6 @@ begin
   Self.Caption := Title;
 end;
 
-procedure TMainView.ActionSettingsExecute(Sender: TObject);
-begin
-  // TODO: ...
-end;
-
 procedure TMainView.SetEditorFontName(const Value: string);
 begin
   Editor.Font.Name := Value;
@@ -385,6 +416,38 @@ procedure TMainView.FormMouseWheelDown(Sender: TObject; Shift: TShiftState; Mous
 begin
   if Shift = [ssCtrl] then
     ActionDecreaseZoom.Execute;
+end;
+
+procedure TMainView.ActionSettingsExecute(Sender: TObject);
+begin
+  Self.SetFontSettings(Editor.Font.Name, Editor.Font.Size);
+  Self.SetDisplayTabSheet(TabSheetSettings);
+end;
+
+procedure TMainView.SetFontSettings(const FontName: string; const Size: Integer);
+begin
+  ComboBoxFontNames.ItemIndex := ComboBoxFontNames.Items.IndexOf(FontName);
+  Editor.Font.Name := FontName;
+  LabelExample.Font.Name := FontName;
+
+  SpinEditFontSize.Value := Size;
+  Editor.Font.Size := Size;
+  LabelExample.Font.Size := Size;
+end;
+
+procedure TMainView.ActionBackToEditorExecute(Sender: TObject);
+begin
+  Self.SetDisplayTabSheet(TabSheetEditor);
+end;
+
+procedure TMainView.ActionRestoreFontSettingsExecute(Sender: TObject);
+begin
+  Self.SetFontSettings(Self.Font.Name, Self.Font.Size);
+end;
+
+procedure TMainView.OnChangeFontSettings(Sender: TObject);
+begin
+  Self.SetFontSettings(ComboBoxFontNames.Text, SpinEditFontSize.Value);
 end;
 
 end.
