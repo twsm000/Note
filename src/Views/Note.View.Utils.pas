@@ -41,7 +41,7 @@ implementation
 
 uses
   System.SysUtils,
-  Note.View.StringResources;
+  Note.Controller.StringResources;
 
 const
   MB_CONFIRMATION = MB_ICONQUESTION + MB_YESNO;
@@ -124,7 +124,7 @@ begin
     FileDialog.EncodingIndex := EncodingIndex;
 
     FileDialog.Title := TStringResources.OpenFileTitle;
-    FileDialog.Filter := 'Text file | *.txt';
+    FileDialog.Filter := 'Text files (*.txt)|*.TXT|Any file (*.*)|*.*';
     FileDialog.InitialDir := InitialDir;
     FileDialog.Options := [TOpenOption.ofOverwritePrompt, TOpenOption.ofPathMustExist,
       TOpenOption.ofFileMustExist];
@@ -155,7 +155,7 @@ begin
     FileDialog.EncodingIndex := EncodingIndex;
 
     FileDialog.Title := TStringResources.SaveFileAsTitle;
-    FileDialog.Filter := 'Text file | *.txt';
+    FileDialog.Filter := 'Text files (*.txt)|*.TXT|Any file (*.*)|*.*';
     FileDialog.InitialDir := InitialDir;
     FileDialog.FileName := FileName;
     FileDialog.Options := [TOpenOption.ofOverwritePrompt, TOpenOption.ofPathMustExist];
@@ -164,7 +164,8 @@ begin
       Abort;
 
     Result.FilePath := FileDialog.FileName;
-    if not Result.FilePath.EndsWith('.txt', True) then
+    if not Result.FilePath.EndsWith('.txt', True)
+    and (FileDialog.FilterIndex = 0) then
       Result.FilePath := Result.FilePath + '.txt';
     Result.Encoding := FileDialog.Encodings[FileDialog.EncodingIndex];
   finally

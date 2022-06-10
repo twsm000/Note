@@ -37,6 +37,7 @@ implementation
 uses
   Note.Controller.Exceptions,
   Note.Controller.FilePath,
+  Note.Controller.StringResources,
   Note.Controller.Utils;
 
 { TTextFileController }
@@ -76,6 +77,8 @@ begin
 end;
 
 procedure TTextFileController.OpenFile(const FilePath, EncodingName: string);
+var
+  FileName: string;
 begin
   if Assigned(FReadedContent) then
     FreeAndNil(FReadedContent);
@@ -89,9 +92,11 @@ begin
     FEditor.Content.Assign(FReadedContent);
     Self.UpdateAppMainTitle;
   except
-    on E: EOutOfResources do
+    on E: Exception do
     begin
-      raise EUnsuportedFile.Create('Unsuported file: ' + FOpenedFile.FullName);
+      FileName := FOpenedFile.FullName;
+      Self.OpenFile(TStringResources.DefaultFileName, '');
+      raise EUnsuportedFile.Create(TStringResources.UnsuportedFile(FileName));
     end;
   end;
 end;

@@ -146,7 +146,7 @@ implementation
 
 uses
   System.UITypes,
-  Note.View.StringResources,
+  Note.Controller.StringResources,
   Note.Controller.FilePath,
   Note.Controller.Exceptions,
   Note.Controller.Utils,
@@ -248,7 +248,9 @@ begin
   begin
     TAlertHelper.MessageError(E.Message, App.Name);
     Application.Terminate;
-  end;
+  end
+  else
+    TAlertHelper.MessageError(E.Message, 'Atenção!');
 end;
 
 procedure TMainView.OnPopUpMenuClick(Sender: TObject);

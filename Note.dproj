@@ -145,13 +145,13 @@
         </DCCReference>
         <DCCReference Include="src\Views\Note.View.Controls.pas"/>
         <DCCReference Include="src\Views\Note.View.Utils.pas"/>
-        <DCCReference Include="src\Views\Note.View.StringResources.pas"/>
+        <DCCReference Include="src\Controllers\Note.Controller.StringResources.pas"/>
         <DCCReference Include="src\Controllers\Note.Controller.Exceptions.pas"/>
         <DCCReference Include="src\Controllers\Note.Controller.FilePath.pas"/>
         <DCCReference Include="src\Controllers\Note.Controller.Interfaces.pas"/>
         <DCCReference Include="src\Controllers\Note.Controller.Utils.pas"/>
         <DCCReference Include="src\Controllers\Note.Controller.TextFile.pas"/>
-        <DCCReference Include="Note.View.IniFile.pas"/>
+        <DCCReference Include="src\Views\Note.View.IniFile.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

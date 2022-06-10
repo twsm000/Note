@@ -60,6 +60,7 @@ object MainView: TMainView
         Align = alClient
         ScrollBars = ssVertical
         TabOrder = 0
+        WantTabs = True
       end
       object PanelMenu: TPanel
         AlignWithMargins = True
@@ -166,9 +167,7 @@ object MainView: TMainView
           Font.Style = []
           ParentFont = False
           WordWrap = True
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 819
+          ExplicitWidth = 814
           ExplicitHeight = 108
         end
       end
