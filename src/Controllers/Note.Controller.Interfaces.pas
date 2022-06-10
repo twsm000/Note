@@ -46,6 +46,7 @@ type
     function IsDirectory: Boolean;
     function SetAttrReadOnlyParaArchive: Boolean;
     procedure WaitOutput(SleepCheck: Integer = 500);
+    function NewFileName(const NewName: string): IFile;
   end;
 
   IEditor<T> = interface

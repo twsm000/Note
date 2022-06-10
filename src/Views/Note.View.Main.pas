@@ -99,6 +99,7 @@ type
     procedure ActionWordWrapExecute(Sender: TObject);
     procedure FormMouseWheelUp(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
     procedure FormMouseWheelDown(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     FPopMenuMap: TDictionary<TObject, TPopupMenu>;
     FFileController: IFileController<TStrings>;
@@ -106,6 +107,10 @@ type
     procedure SetFileController(const Value: IFileController<TStrings>);
     procedure TrySaveFile;
     procedure SetMainTitle(const Title: string);
+    procedure SetWordWrapEnabled(Value: Boolean);
+    procedure SetStatusBarVisible(Value: Boolean);
+    procedure SetEditorFontSize(const Value: Integer);
+    procedure SetEditorFontName(const Value: string);
     { Private declarations }
   public
     property FileController: IFileController<TStrings> read FFileController write SetFileController;
@@ -121,11 +126,44 @@ implementation
 uses
   System.UITypes,
   Note.View.StringResources,
+  Note.Controller.FilePath,
   Note.Controller.Exceptions,
-  Note.Controller.Utils;
+  Note.Controller.Utils,
+  Note.View.IniFile,
+  System.IniFiles;
 
 {$R *.dfm}
 
+
+const
+  INI_SETTINGS_FILE_NAME = 'note.settings.ini';
+
+type
+  TIniSectionDisplay = record
+  const
+    STATUS_BAR: string = 'StatusBar';
+    WORD_WRAP: string = 'WordWrap';
+  end;
+
+  TIniSectionFont = record
+  const
+    FONT_NAME: string = 'FontName';
+    FONT_SIZE: string = 'FontSize';
+  end;
+
+  TIniSections = record
+  const
+    DISPLAY: string = 'DISPLAY';
+    DISPLAY_ITEMS: TIniSectionDisplay = ();
+
+    FONTS: string = 'FONT';
+    FONT_ITEMS: TIniSectionFont = ();
+  end;
+
+function GetIniFileSettings: IFile;
+begin
+  Result := NewFile(WindowsUserFolder + INI_SETTINGS_FILE_NAME);
+end;
 
 procedure TMainView.FormCreate(Sender: TObject);
 begin
@@ -141,6 +179,20 @@ begin
   ActionIncreaseZoom.SecondaryShortCuts.Add('Ctrl++');
   ActionDecreaseZoom.ShortCut := scCtrl or vkMinus;
   ActionDecreaseZoom.SecondaryShortCuts.Add('Ctrl+-');
+
+  NewIniFormFile(GetIniFileSettings, Self)
+    .OnReadFile(procedure(Ini: TMemIniFile)
+    begin
+      Self.SetStatusBarVisible(Ini.ReadBool(TIniSections.DISPLAY, TIniSections.DISPLAY_ITEMS.STATUS_BAR,
+        ActionStatusBar.Checked));
+
+      Self.SetWordWrapEnabled(Ini.ReadBool(TIniSections.DISPLAY, TIniSections.DISPLAY_ITEMS.WORD_WRAP,
+        ActionWordWrap.Checked));
+
+      Self.SetEditorFontName(Ini.ReadString(TIniSections.FONTS, TIniSectionFont.FONT_NAME, Self.Font.Name));
+      Self.SetEditorFontSize(Ini.ReadInteger(TIniSections.FONTS, TIniSectionFont.FONT_SIZE, Self.Font.Size));
+    end)
+    .Read;
 end;
 
 procedure TMainView.FormDestroy(Sender: TObject);
@@ -171,7 +223,7 @@ begin
   if (Sender is TSpeedButton) and FPopMenuMap.TryGetValue(Sender, Menu) then
   begin
     Button := Sender as TSpeedButton;
-    TPopUpHelper.Display(Self, Menu, Button.Left, Button.Top + Button.Height);
+    TPopUpHelper.DISPLAY(Self, Menu, Button.Left, Button.Top + Button.Height);
   end;
 end;
 
@@ -189,6 +241,20 @@ begin
     Exit;
 
   Self.TrySaveFile;
+end;
+
+procedure TMainView.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  NewIniFormFile(GetIniFileSettings, Self)
+    .OnWriteFile(procedure(Ini: TMemIniFile)
+    begin
+      Ini.WriteBool(TIniSections.DISPLAY, TIniSections.DISPLAY_ITEMS.STATUS_BAR, ActionStatusBar.Checked);
+      Ini.WriteBool(TIniSections.DISPLAY, TIniSections.DISPLAY_ITEMS.WORD_WRAP, ActionWordWrap.Checked);
+
+      Ini.WriteString(TIniSections.FONTS, TIniSectionFont.FONT_NAME, Editor.Font.Name);
+      Ini.WriteInteger(TIniSections.FONTS, TIniSectionFont.FONT_SIZE, Editor.Font.Size);
+    end)
+    .Write;
 end;
 
 procedure TMainView.TrySaveFile;
@@ -262,14 +328,24 @@ begin
   // TODO: ...
 end;
 
+procedure TMainView.SetEditorFontName(const Value: string);
+begin
+  Editor.Font.Name := Value;
+end;
+
+procedure TMainView.SetEditorFontSize(const Value: Integer);
+begin
+  Editor.Font.Size := Value;
+end;
+
 procedure TMainView.ActionIncreaseZoomExecute(Sender: TObject);
 begin
-  Editor.Font.Size := Editor.Font.Size + 1;
+  Self.SetEditorFontSize(Editor.Font.Size + 1);
 end;
 
 procedure TMainView.ActionDecreaseZoomExecute(Sender: TObject);
 begin
-  Editor.Font.Size := Editor.Font.Size - 1;
+  Self.SetEditorFontSize(Editor.Font.Size - 1);
 end;
 
 procedure TMainView.ActionDefaultZoomExecute(Sender: TObject);
@@ -279,13 +355,23 @@ end;
 
 procedure TMainView.ActionStatusBarExecute(Sender: TObject);
 begin
-  ActionStatusBar.Checked := not ActionStatusBar.Checked;
+  Self.SetStatusBarVisible(not ActionStatusBar.Checked);
+end;
+
+procedure TMainView.SetStatusBarVisible(Value: Boolean);
+begin
+  ActionStatusBar.Checked := Value;
   StatusBarMain.Visible := ActionStatusBar.Checked;
 end;
 
 procedure TMainView.ActionWordWrapExecute(Sender: TObject);
 begin
-  ActionWordWrap.Checked := not ActionWordWrap.Checked;
+  Self.SetWordWrapEnabled(not ActionWordWrap.Checked);
+end;
+
+procedure TMainView.SetWordWrapEnabled(Value: Boolean);
+begin
+  ActionWordWrap.Checked := Value;
   Editor.WordWrap := ActionWordWrap.Checked;
 end;
 

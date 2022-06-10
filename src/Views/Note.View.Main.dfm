@@ -11,6 +11,8 @@ object MainView: TMainView
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poDesigned
+  OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -94,7 +96,6 @@ object MainView: TMainView
     Align = alClient
     ScrollBars = ssVertical
     TabOrder = 2
-    ExplicitTop = 44
   end
   object ActionListMain: TActionList
     Images = VirtualImageList1

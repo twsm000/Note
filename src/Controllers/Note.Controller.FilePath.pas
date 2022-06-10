@@ -116,6 +116,7 @@ type
     function IsDirectory: Boolean; virtual;
     function SetAttrReadOnlyParaArchive: Boolean; virtual;
     procedure WaitOutput(SleepCheck: Integer = 500); virtual;
+    function NewFileName(const NewName: string): IFile;
   end;
 
   TFileTemp = class(TFile)
@@ -364,6 +365,11 @@ end;
 function TFile.Date: TDateTime;
 begin
   FileAge(ExcludeTrailingPathDelimiter(Self.Path), Result);
+end;
+
+function TFile.NewFileName(const NewName: string): IFile;
+begin
+  Result := NewFile(Self.Directory.Path + NewName, FAcceptEmptyExtension, FPromptDeleteFolderMessage);
 end;
 
 { TFileTemp }

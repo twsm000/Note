@@ -151,6 +151,7 @@
         <DCCReference Include="src\Controllers\Note.Controller.Interfaces.pas"/>
         <DCCReference Include="src\Controllers\Note.Controller.Utils.pas"/>
         <DCCReference Include="src\Controllers\Note.Controller.TextFile.pas"/>
+        <DCCReference Include="Note.View.IniFile.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -186,6 +187,12 @@
                 <DeployFile LocalName="Win32\Debug\Note.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>Note.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="bin\Note.rsm" Configuration="Debug" Class="DebugSymbols">
+                    <Platform Name="Win64">
+                        <RemoteName>Note.rsm</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

@@ -13,7 +13,8 @@ uses
   Note.Controller.FilePath in 'src\Controllers\Note.Controller.FilePath.pas',
   Note.Controller.Interfaces in 'src\Controllers\Note.Controller.Interfaces.pas',
   Note.Controller.Utils in 'src\Controllers\Note.Controller.Utils.pas',
-  Note.Controller.TextFile in 'src\Controllers\Note.Controller.TextFile.pas';
+  Note.Controller.TextFile in 'src\Controllers\Note.Controller.TextFile.pas',
+  Note.View.IniFile in 'Note.View.IniFile.pas';
 
 {$R *.res}
 
@@ -26,7 +27,7 @@ begin
     Application.MainFormOnTaskbar := True;
     ReportMemoryLeaksOnShutdown := True;
     Application.CreateForm(TMainView, MainView);
-    Application.OnException := MainView.ExceptionHandler;
+  Application.OnException := MainView.ExceptionHandler;
     FilePath := ParamStr(1);
     if FilePath = '' then
       FilePath := TStringResources.DefaultFileName;
